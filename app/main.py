@@ -1,23 +1,30 @@
 import os
 import json
-from PIL import Image
-import numpy as np
+import gdown  # To download from Google Drive
 import tensorflow as tf
 import streamlit as st
+from PIL import Image
+import numpy as np
 
-# Get the absolute path of the current working directory
-working_dir = os.path.dirname(os.path.abspath(__file__))
+# Set paths
+MODEL_DIR = "app/trained_model"
+MODEL_PATH = os.path.join(MODEL_DIR, "plant_disease_prediction_model.h5")
+CLASS_INDICES_PATH = "app/class_indices.json"
 
-# Construct absolute paths
-MODEL_PATH = os.path.join(working_dir, "trained_model/plant_disease_prediction_model.h5")
-CLASS_INDICES_PATH = os.path.join(working_dir, "class_indices.json")
+# Google Drive File ID
+GDRIVE_FILE_ID = "1eJr1kCEng9nliGRWdAK2fanyxw6V9iPP"
 
-# Verify if the model file exists before loading
+# Ensure model directory exists
+os.makedirs(MODEL_DIR, exist_ok=True)
+
+# Download model if not available
 if not os.path.exists(MODEL_PATH):
-    st.error(f"❌ Model file not found at {MODEL_PATH}. Please check the path.")
-    st.stop()
+    st.info("Downloading model file from Google Drive... ⏳")
+    url = f"https://drive.google.com/uc?id={GDRIVE_FILE_ID}"
+    gdown.download(url, MODEL_PATH, quiet=False)
 
 # Load the trained model
+st.info("Loading model... 🚀")
 model = tf.keras.models.load_model(MODEL_PATH)
 
 # Load class indices
@@ -25,11 +32,11 @@ with open(CLASS_INDICES_PATH, "r") as f:
     class_indices = json.load(f)
     class_labels = {int(k): v for k, v in class_indices.items()}  # Convert keys to int
 
-# Function to preprocess image
+# Image processing function
 def preprocess_image(image, target_size=(224, 224)):
-    image = image.resize(target_size)
-    img_array = np.array(image) / 255.0
-    img_array = np.expand_dims(img_array, axis=0)
+    image = image.resize(target_size)  # Resize to model input size
+    img_array = np.array(image) / 255.0  # Normalize pixel values
+    img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
     return img_array
 
 # Streamlit UI
@@ -43,17 +50,26 @@ if uploaded_file is not None:
     image = Image.open(uploaded_file)
     st.image(image, caption="Uploaded Image", use_column_width=True)
     st.write("Processing...")
-
+    
+    # Preprocess image
     processed_image = preprocess_image(image)
+    
+    # Make prediction
     prediction = model.predict(processed_image)
     predicted_class = np.argmax(prediction, axis=1)[0]
-    predicted_label = class_labels.get(predicted_class, "Unknown")
-
+    predicted_label = class_labels[predicted_class]
+    
+    # Display result
     st.subheader("Prediction Result 🏷️")
     if "healthy" in predicted_label.lower():
         st.success(f"✅ The plant is **Healthy**! ({predicted_label})")
     else:
-        st.error(f"⚠️ The plant is NOT Healthy :( \n It has **{predicted_label}** disease.")
+        st.error(f"⚠️ The plant has **{predicted_label}**.")
+    
+    # Show prediction probabilities (optional)
+    st.write("### Prediction Probabilities")
+    for idx, label in class_labels.items():
+        st.write(f"{label}: {prediction[0][idx]:.4f}")
 
 # Footer
 st.markdown("---")
