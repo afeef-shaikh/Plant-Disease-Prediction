@@ -2,3 +2,4 @@
 __pycache__/
 .DS_Store
 kaggle.json
+app/trained_model/plant_disease_prediction_model.h5
