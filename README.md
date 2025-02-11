@@ -9,6 +9,11 @@
 
 ---
 
+## 🌍 Live Demo
+🚀 **Try it out now!** 👉 [**Plant Disease Prediction App**](https://plant-disease-prediction-dl.streamlit.app/)
+
+---
+
 ## 🚀 Features
 - 🌍 **AI-based Image Classification** - Identifies plant diseases using a trained deep learning model.
 - 🎯 **High Accuracy** - Powered by a CNN model trained on a plant disease dataset.
@@ -16,13 +21,12 @@
 - 📊 **Prediction Confidence Scores** - Shows the probability of different disease classes.
 - 🖥️ **Streamlit Web UI** - Simple and interactive UI for easy access.
 - 💾 **Lightweight & Efficient** - Designed for quick and accurate predictions.
-- 🐳 **Docker Support (Coming Soon!)** - Deploy using Docker for portability.
 
 ---
 
 ## 📷 Demo
 ![Plant Disease Prediction Demo](https://github.com/afeef-shaikh/Plant-Disease-Prediction/blob/main/static/demo.gif)  
-🚀 **Try it out yourself!**
+🚀 **Try it out yourself!** 👉 [**Plant Disease Prediction App**](https://plant-disease-prediction-dl.streamlit.app/)
 
 ---
 
